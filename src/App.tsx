@@ -7,6 +7,7 @@ import AdminCourts from "./Admin/courts";
 import DashboardLayout from "./User/DashBoardLayout";
 import UserDashboard from "./User/userdashboard";
 import BookingsPage from "./User/BookingsPage";
+import ProfilePage from "./User/ProfilePage";
 
 const App: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
       <Route element={<DashboardLayout />}>
         <Route path="/user-dashboard" element={<UserDashboard />} />
         <Route path="/bookings"       element={<BookingsPage />} />
+        <Route path="/profile"        element={<ProfilePage />} />
       </Route>
 
       {/* Admin area */}
