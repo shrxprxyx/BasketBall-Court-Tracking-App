@@ -1,0 +1,40 @@
+{
+    "info": {
+      "_postman_id": "add-court-admin",
+      "name": "Add Court Admin",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Add Court",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ],
+          "body": {
+            "mode": "formdata",
+            "formdata": [
+              { "key": "name", "value": "CIT Sports Complex", "type": "text" },
+              { "key": "surface", "value": "Concrete", "type": "text" },
+              { "key": "status", "value": "AVAILABLE", "type": "text" },
+              { "key": "distance", "value": "1.5", "type": "text" },
+              { "key": "players", "value": "0", "type": "text" },
+              { "key": "photo", "type": "file", "src": "/path/to/your/image.jpg" }
+            ]
+          },
+          "url": {
+            "raw": "http://localhost:8080/api/admin/court",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8080",
+            "path": ["api", "admin", "court"]
+          }
+        }
+      }
+    ]
+  }
+  
