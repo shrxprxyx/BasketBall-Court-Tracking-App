@@ -3,11 +3,11 @@ const router = express.Router();
 const pool = require("../db/pool");
 const { getIO } = require("../socket");
 
-// ✅ Helper — broadcast latest bookings to all clients
+// ✅ Helper — broadcast latest bookings (includes user_id for frontend matching)
 const emitBookingsUpdate = async () => {
   try {
     const result = await pool.query(
-      `SELECT b.id, u.name AS user, c.name AS court, b.timeslot, b.status
+      `SELECT b.id, b.user_id, u.name AS user, c.name AS court, b.timeslot, b.status
        FROM bookings b
        JOIN users u ON b.user_id = u.id
        JOIN basketball_courts c ON b.court_id = c.id
@@ -24,7 +24,7 @@ const emitBookingsUpdate = async () => {
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT b.id, u.name AS user, c.name AS court, b.timeslot, b.status
+      `SELECT b.id, b.user_id, u.name AS user, c.name AS court, b.timeslot, b.status
        FROM bookings b
        JOIN users u ON b.user_id = u.id
        JOIN basketball_courts c ON b.court_id = c.id
