@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import { motion } from "framer-motion";
-import io from "socket.io-client";
-import {
-  Bell,
-  User,
-  MapPin,
-  Bookmark,
-  Users,
-  Settings,
-  Box,
-} from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-
-// Types
-=======
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -42,7 +15,6 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
->>>>>>> 068dd01 (added bookingspage, userdashboard)
 type Court = {
   id: number;
   name: string;
@@ -68,9 +40,6 @@ type Booking = {
   status: string;
 };
 
-<<<<<<< HEAD
-// Dummy weekly data
-=======
 type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
 
 type Toast = {
@@ -89,7 +58,6 @@ type LiveEvent = {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
->>>>>>> 068dd01 (added bookingspage, userdashboard)
 const weeklyData = [
   { day: "Mon", value: 25 },
   { day: "Tue", value: 32 },
@@ -100,25 +68,6 @@ const weeklyData = [
   { day: "Sun", value: 45 },
 ];
 
-<<<<<<< HEAD
-// Status color badge
-const statusBadge = (status?: string) => {
-  switch ((status || "").toLowerCase()) {
-    case "available":
-      return "bg-green-100 text-green-700";
-    case "occupied":
-      return "bg-red-100 text-red-700";
-    case "maintenance":
-      return "bg-amber-100 text-amber-700";
-    default:
-      return "bg-gray-100 text-gray-700";
-  }
-};
-
-// Change this to your backend URL
-const API_BASE = "http://localhost:8080/api";
-const SOCKET_URL = "http://localhost:8080";
-=======
 const API_BASE = "http://localhost:8080/api";
 const SOCKET_URL = "http://localhost:8080";
 
@@ -199,18 +148,12 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: (id: string) => void }> = (
 
 
 // ─── Main Component ───────────────────────────────────────────────────────────
->>>>>>> 068dd01 (added bookingspage, userdashboard)
 
 const AdminDashboard: React.FC = () => {
   const [courts, setCourts] = useState<Court[]>([]);
   const [users, setUsers] = useState<UserType[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-<<<<<<< HEAD
-
-  useEffect(() => {
-    // Fetch initial data
-=======
   const [activeNav, setActiveNav] = useState("dashboard");
 
   // Real-time state
@@ -262,7 +205,6 @@ const AdminDashboard: React.FC = () => {
   // ── Initial fetch ─────────────────────────────────────────────────────────
 
   useEffect(() => {
->>>>>>> 068dd01 (added bookingspage, userdashboard)
     const fetchData = async () => {
       try {
         const [courtRes, userRes, bookingRes] = await Promise.all([
@@ -275,35 +217,12 @@ const AdminDashboard: React.FC = () => {
         setBookings(bookingRes.data || []);
       } catch (err) {
         console.error("Error fetching data:", err);
-<<<<<<< HEAD
-=======
         addToastRef.current("Failed to load initial data", "error");
->>>>>>> 068dd01 (added bookingspage, userdashboard)
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-<<<<<<< HEAD
-
-    // Connect to Socket.io server
-    const socket = io(SOCKET_URL, {
-      transports: ["websocket", "polling"],
-    });
-
-    socket.on("connect", () => {
-      console.log("Connected to socket server:", socket.id);
-    });
-
-    // Listen for user updates
-    socket.on("usersUpdated", (updatedUsers: UserType[]) => {
-      console.log("Received updated users list:", updatedUsers);
-      setUsers(updatedUsers);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Disconnected from socket server");
-=======
   }, []); // stable ref — no deps needed
 
   // ── Socket.IO ─────────────────────────────────────────────────────────────
@@ -369,199 +288,11 @@ const AdminDashboard: React.FC = () => {
       flashTable("bookings");
       addToast(`New booking activity · ${updatedBookings.length} total`, "success");
       addLiveEvent(`Bookings updated (${updatedBookings.length} bookings)`, "bookings");
->>>>>>> 068dd01 (added bookingspage, userdashboard)
     });
 
     return () => {
       socket.disconnect();
     };
-<<<<<<< HEAD
-  }, []);
-
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen text-xl">
-        Loading dashboard...
-      </div>
-    );
-
-  return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg p-6 hidden md:flex flex-col">
-        <h1 className="text-2xl font-semibold text-orange-500 mb-8">
-          Admin Panel
-        </h1>
-        <nav className="flex flex-col gap-4 text-gray-700 font-medium">
-          <a className="flex items-center gap-2 text-orange-500" href="#">
-            <Box size={18} /> Dashboard
-          </a>
-          <Link
-            to="/admin/courts"
-            className="flex items-center gap-2 hover:text-orange-500"
-          >
-            <MapPin size={18} /> Courts
-          </Link>
-          <a className="flex items-center gap-2 hover:text-orange-500" href="#">
-            <Users size={18} /> Users
-          </a>
-          <a className="flex items-center gap-2 hover:text-orange-500" href="#">
-            <Bookmark size={18} /> Bookings
-          </a>
-          <a className="flex items-center gap-2 hover:text-orange-500" href="#">
-            <Settings size={18} /> Settings
-          </a>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col p-6">
-        {/* Header */}
-        <header className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold text-gray-800">
-            Dashboard Overview
-          </h2>
-          <div className="flex items-center gap-4">
-            <Bell className="text-gray-600 hover:text-orange-500 cursor-pointer" />
-            <div className="flex items-center gap-2">
-              <User className="text-gray-600" />
-              <span className="text-gray-700 font-medium">Admin</span>
-            </div>
-          </div>
-        </header>
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {[
-            { label: "Total Courts", value: courts.length },
-            { label: "Total Users", value: users.length },
-            { label: "Total Bookings", value: bookings.length },
-          ].map((card, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between"
-            >
-              <h3 className="text-gray-500 font-medium">{card.label}</h3>
-              <p className="text-3xl font-semibold text-gray-800 mt-2">
-                {card.value}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Chart */}
-        <div className="bg-white shadow rounded-2xl p-6 mb-6">
-          <h3 className="text-lg font-semibold mb-4">Weekly Booking Trend</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={weeklyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="value" stroke="#f97316" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Courts & Users Tables */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Courts */}
-          <div className="bg-white rounded-2xl shadow p-6">
-            <h3 className="text-lg font-semibold mb-4">Courts</h3>
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-2">Name</th>
-                  <th>Status</th>
-                  <th>Players</th>
-                </tr>
-              </thead>
-              <tbody>
-                {courts.map((c) => (
-                  <tr key={c.id} className="border-b hover:bg-gray-50">
-                    <td className="py-2 font-medium">{c.name}</td>
-                    <td>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${statusBadge(
-                          c.status
-                        )}`}
-                      >
-                        {c.status}
-                      </span>
-                    </td>
-                    <td>{c.players ?? "-"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Users */}
-          <div className="bg-white rounded-2xl shadow p-6">
-            <h3 className="text-lg font-semibold mb-4">Users</h3>
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-2">Name</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((u) => (
-                  <tr key={u.id} className="border-b hover:bg-gray-50">
-                    <td className="py-2 font-medium">{u.name}</td>
-                    <td>{u.email}</td>
-                    <td>{u.role}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Bookings */}
-        <div className="bg-white rounded-2xl shadow p-6">
-          <h3 className="text-lg font-semibold mb-4">Recent Bookings</h3>
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b">
-                <th className="py-2">User</th>
-                <th>Court</th>
-                <th>Time Slot</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((b) => (
-                <tr key={b.id} className="border-b hover:bg-gray-50">
-                  <td className="py-2">{b.user}</td>
-                  <td>{b.court}</td>
-                  <td>{b.timeslot}</td>
-                  <td>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${statusBadge(
-                        b.status
-                      )}`}
-                    >
-                      {b.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default AdminDashboard;
-=======
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Loading screen ────────────────────────────────────────────────────────
@@ -1000,4 +731,3 @@ export default AdminDashboard;
 };
 
 export default AdminDashboard;
->>>>>>> 068dd01 (added bookingspage, userdashboard)

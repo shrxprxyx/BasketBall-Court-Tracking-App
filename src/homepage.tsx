@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import basketballCourt from "../src/assets/basketballCourt.jpeg";
-import { MapPin, Clock, Users, Bell, Shield, Calendar } from "lucide-react";
-
-const HomePage: React.FC = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50); // toggle after 50px
-    };
-
-=======
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import basketballCourt from "../src/assets/basketballCourt.jpeg";
@@ -25,18 +10,10 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 60);
->>>>>>> 068dd01 (added bookingspage, userdashboard)
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-<<<<<<< HEAD
-  const features = [
-    {
-      title: "Real-time Location",
-      desc: "Find basketball courts near you with GPS-based search and real-time availability updates.",
-      icon: <MapPin className="w-6 h-6 text-white" />,
-=======
   // Intersection observer for features section
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -54,122 +31,38 @@ const HomePage: React.FC = () => {
       icon: <MapPin className="w-5 h-5" />,
       color: "text-orange-400",
       bg: "bg-orange-500/10 border-orange-500/20",
->>>>>>> 068dd01 (added bookingspage, userdashboard)
     },
     {
       title: "Instant Booking",
       desc: "Reserve your court time instantly with our smart booking system. No more waiting in line.",
-<<<<<<< HEAD
-      icon: <Clock className="w-6 h-6 text-white" />,
-=======
       icon: <Clock className="w-5 h-5" />,
       color: "text-blue-400",
       bg: "bg-blue-500/10 border-blue-500/20",
->>>>>>> 068dd01 (added bookingspage, userdashboard)
     },
     {
       title: "Player Count",
       desc: "See how many players are currently on each court and plan your games accordingly.",
-<<<<<<< HEAD
-      icon: <Users className="w-6 h-6 text-white" />,
-=======
       icon: <Users className="w-5 h-5" />,
       color: "text-green-400",
       bg: "bg-green-500/10 border-green-500/20",
->>>>>>> 068dd01 (added bookingspage, userdashboard)
     },
     {
       title: "Smart Notifications",
       desc: "Get alerts about upcoming bookings, availability changes, and community events.",
-<<<<<<< HEAD
-      icon: <Bell className="w-6 h-6 text-white" />,
-=======
       icon: <Bell className="w-5 h-5" />,
       color: "text-amber-400",
       bg: "bg-amber-500/10 border-amber-500/20",
->>>>>>> 068dd01 (added bookingspage, userdashboard)
     },
     {
       title: "Secure Check-in",
       desc: "Seamless and safe check-ins to make your experience smooth and stress-free.",
-<<<<<<< HEAD
-      icon: <Shield className="w-6 h-6 text-white" />,
-=======
       icon: <Shield className="w-5 h-5" />,
       color: "text-purple-400",
       bg: "bg-purple-500/10 border-purple-500/20",
->>>>>>> 068dd01 (added bookingspage, userdashboard)
     },
     {
       title: "Schedule Management",
       desc: "Easily manage your bookings and coordinate with friends for pickup games.",
-<<<<<<< HEAD
-      icon: <Calendar className="w-6 h-6 text-white" />,
-    },
-  ];
-
-  return (
-    <div className="w-screen overflow-x-hidden">
-      {/* Hero Section */}
-      <div
-        className="relative w-screen h-screen bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${basketballCourt})` }}
-      >
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/60" />
-
-        {/* Navbar */}
-        <header
-          className={`fixed top-0 left-0 w-full z-20 transition-all duration-300 ${
-            isScrolled ? "backdrop-blur-md shadow-md" : ""
-          }`}
-        >
-          <div className="flex items-center justify-between px-8 py-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-orange-500" />
-              <span
-                className={`text-lg font-bold ${
-                  isScrolled ? "text-white" : "text-white"
-                }`}
-              >
-                CourtWatch
-              </span>
-            </div>
-
-            <nav className="hidden md:flex items-center gap-8 font-medium">
-              <Link
-                to="/signin"
-                className={`hover:text-orange-500 ${
-                  isScrolled ? "text-orange-500" : "text-white"
-                }`}
-              >
-                Find Courts
-              </Link>
-              <Link
-                to="/signin"
-                className={`hover:text-orange-500 ${
-                  isScrolled ? "text-orange-500" : "text-white"
-                }`}
-              >
-                Book Now
-              </Link>
-              <a
-                href="#"
-                className={`hover:text-orange-500 ${
-                  isScrolled ? "text-orange-500" : "text-white"
-                }`}
-              >
-                About
-              </a>
-            </nav>
-
-            <div className="flex items-center gap-4">
-              <Link
-                to="/signin"
-                className={`hover:text-orange-500 cursor-pointer ${
-                  isScrolled ? "text-white" : "text-white"
-                }`}
-=======
       icon: <Calendar className="w-5 h-5" />,
       color: "text-rose-400",
       bg: "bg-rose-500/10 border-rose-500/20",
@@ -285,17 +178,12 @@ const HomePage: React.FC = () => {
               <Link
                 to="/signin"
                 className="text-[12px] tracking-widest uppercase text-slate-400 hover:text-white transition-colors"
->>>>>>> 068dd01 (added bookingspage, userdashboard)
               >
                 Sign In
               </Link>
               <Link
                 to="/signin"
-<<<<<<< HEAD
-                className="px-4 py-2 rounded-lg cursor-pointer bg-orange-500 text-white font-semibold hover:bg-orange-600 transition"
-=======
                 className="cta-pulse px-4 py-2 rounded-lg bg-orange-500 text-white text-[12px] tracking-widest uppercase font-medium hover:bg-orange-600 transition-colors"
->>>>>>> 068dd01 (added bookingspage, userdashboard)
               >
                 Get Started
               </Link>
@@ -303,85 +191,6 @@ const HomePage: React.FC = () => {
           </div>
         </header>
 
-<<<<<<< HEAD
-        {/* Hero Content */}
-        <main className="relative z-10 flex flex-col items-center justify-center h-[calc(100vh-80px)] text-center px-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-white">
-            Find & Book <br />
-            <span className="text-orange-400">Basketball Courts</span> Near You
-          </h1>
-          <p className="mt-4 text-lg text-gray-200 max-w-2xl">
-            Real-time court availability, instant booking, and location-based
-            check-ins. Never miss your shot again.
-          </p>
-
-          {/* Two Buttons */}
-          <div className="mt-8 flex gap-6">
-            <Link
-              to="/signin"
-              className="px-6 py-3 rounded-lg bg-orange-500 text-white font-semibold hover:bg-orange-600 transition cursor-pointer"
-            >
-              Find Courts Now
-            </Link>
-            <Link
-              to="/signin"
-              className="px-6 py-3 rounded-lg bg-white text-orange-500 font-semibold hover:bg-gray-100 transition cursor-pointer"
-            >
-              Join Community
-            </Link>
-          </div>
-
-          {/* Stats */}
-          <div className="mt-12 grid grid-cols-3 gap-8 text-center">
-            <div>
-              <p className="text-2xl font-bold text-orange-400">500+</p>
-              <p className="text-sm text-gray-200">Courts Listed</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-orange-400">24/7</p>
-              <p className="text-sm text-gray-200">Real-time Updates</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-orange-400">10k+</p>
-              <p className="text-sm text-gray-200">Active Players</p>
-            </div>
-          </div>
-        </main>
-      </div>
-
-      {/* Features Section */}
-      <section className="py-20 px-6 md:px-16 bg-gray-50 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-          Why Choose CourtTracker?
-        </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto mb-12">
-          Everything you need to find, book, and play on the best basketball
-          courts in your area
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {features.map((feature, i) => (
-            <div
-              key={i}
-              className="p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition"
-            >
-              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-orange-500 mx-auto mb-4">
-                {feature.icon}
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600">{feature.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  );
-};
-
-export default HomePage;
-=======
         {/* ── Hero ── */}
         <section
           className="grain-overlay relative w-screen h-screen bg-cover bg-center bg-no-repeat scan"
@@ -523,4 +332,3 @@ export default HomePage;
 };
 
 export default HomePage;
->>>>>>> 068dd01 (added bookingspage, userdashboard)

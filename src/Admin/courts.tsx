@@ -1,75 +1,26 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
-<<<<<<< HEAD
-  PlusCircle,
-  Trash2,
-  Edit3,
-  Box,
-  MapPin,
-  Users,
-  Bookmark,
-  Settings,
-} from "lucide-react";
-import { motion } from "framer-motion";
-=======
   PlusCircle, Trash2, Edit3, Box, MapPin,
   Users, Bookmark, Settings, X, Check,
   Activity, ImageIcon, Zap,
   Pointer,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
->>>>>>> 068dd01 (added bookingspage, userdashboard)
 import { Link } from "react-router-dom";
 
 type Court = {
   id: number;
   name: string;
-<<<<<<< HEAD
-  surface?: string;
-  status?: string;
-  distance?: number;
-  players?: number;
-  photo?: string | null;
-=======
   surface: string;
   status: string;
   distance: number;
   players: number;
   photo: string | null;
->>>>>>> 068dd01 (added bookingspage, userdashboard)
 };
 
 const API_BASE = "http://localhost:8080/api";
 
-<<<<<<< HEAD
-// Framer Motion variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.1 } },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
-  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
-};
-
-const AdminCourts: React.FC = () => {
-  const [courts, setCourts] = useState<Court[]>([]);
-  const [name, setName] = useState("");
-  const [surface, setSurface] = useState("");
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  // Editing states
-  const [editingCourt, setEditingCourt] = useState<Court | null>(null);
-  const [editName, setEditName] = useState("");
-  const [editSurface, setEditSurface] = useState("");
-  const [editStatus, setEditStatus] = useState("");
-
-  // Fetch courts from backend
-=======
 const statusConfig = (status?: string) => {
   switch ((status || "").toUpperCase()) {
     case "AVAILABLE":
@@ -113,7 +64,6 @@ const AdminCourts: React.FC = () => {
   const [editDistance, setEditDistance] = useState(0);
   const [editPlayers, setEditPlayers]   = useState(0);
 
->>>>>>> 068dd01 (added bookingspage, userdashboard)
   const fetchCourts = async () => {
     try {
       const res = await axios.get(`${API_BASE}/courts`);
@@ -123,22 +73,6 @@ const AdminCourts: React.FC = () => {
     }
   };
 
-<<<<<<< HEAD
-  useEffect(() => {
-    fetchCourts();
-  }, []);
-
-  // Add new court
-  const handleAddCourt = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("surface", surface);
-    if (photo) formData.append("photo", photo);
-
-=======
   useEffect(() => { fetchCourts(); }, []);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -163,20 +97,13 @@ const AdminCourts: React.FC = () => {
     formData.append("distance", String(distance));
     formData.append("players", String(players));
     if (photo) formData.append("photo", photo);
->>>>>>> 068dd01 (added bookingspage, userdashboard)
     try {
       await axios.post(`${API_BASE}/admin/court`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-<<<<<<< HEAD
-      setName("");
-      setSurface("");
-      setPhoto(null);
-=======
       setName(""); setSurface(""); setStatus("AVAILABLE");
       setDistance(""); setPlayers(""); setPhoto(null); setPhotoPreview(null);
       setShowAddForm(false);
->>>>>>> 068dd01 (added bookingspage, userdashboard)
       fetchCourts();
     } catch (err) {
       console.error("Error adding court:", err);
@@ -185,25 +112,6 @@ const AdminCourts: React.FC = () => {
     }
   };
 
-<<<<<<< HEAD
-  // Delete court
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this court?")) return;
-    try {
-      await axios.delete(`${API_BASE}/admin/court/${id}`);
-      fetchCourts();
-    } catch (err) {
-      console.error("Error deleting court:", err);
-    }
-  };
-
-  // Edit court
-  const handleEditClick = (court: Court) => {
-    setEditingCourt(court);
-    setEditName(court.name);
-    setEditSurface(court.surface || "");
-    setEditStatus(court.status || "AVAILABLE");
-=======
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`${API_BASE}/admin/court/${id}`);
@@ -221,193 +129,19 @@ const AdminCourts: React.FC = () => {
     setEditStatus(court.status);
     setEditDistance(court.distance);
     setEditPlayers(court.players);
->>>>>>> 068dd01 (added bookingspage, userdashboard)
   };
 
   const handleUpdateCourt = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingCourt) return;
-<<<<<<< HEAD
-
-    try {
-      await axios.put(`${API_BASE}/admin/court/${editingCourt.id}`, {
-        name: editName,
-        surface: editSurface,
-        status: editStatus,
-=======
     try {
       await axios.put(`${API_BASE}/admin/court/${editingCourt.id}`, {
         name: editName, surface: editSurface,
         status: editStatus, distance: editDistance, players: editPlayers,
->>>>>>> 068dd01 (added bookingspage, userdashboard)
       });
       setEditingCourt(null);
       fetchCourts();
     } catch (err) {
-<<<<<<< HEAD
-      console.error("Error updating court:", err);
-    }
-  };
-
-  return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg p-6 hidden md:flex flex-col">
-        <h1 className="text-2xl font-semibold text-orange-500 mb-8">Admin Panel</h1>
-        <nav className="flex flex-col gap-4 text-gray-700 font-medium">
-          <Link to="/admin-dashboard" className="flex items-center gap-2 hover:text-orange-500">
-            <Box size={18} /> Dashboard
-          </Link>
-          <Link to="/admin/courts" className="flex items-center gap-2 text-orange-500">
-            <MapPin size={18} /> Courts
-          </Link>
-          <a className="flex items-center gap-2 hover:text-orange-500" href="#">
-            <Users size={18} /> Users
-          </a>
-          <a className="flex items-center gap-2 hover:text-orange-500" href="#">
-            <Bookmark size={18} /> Bookings
-          </a>
-          <a className="flex items-center gap-2 hover:text-orange-500" href="#">
-            <Settings size={18} /> Settings
-          </a>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex-1 p-6">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Manage Courts</h1>
-
-        {/* Add Court Form */}
-        <form
-          onSubmit={handleAddCourt}
-          className="bg-white rounded-xl shadow p-6 mb-8 flex flex-col md:flex-row gap-4"
-        >
-          <input
-            type="text"
-            placeholder="Court Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="border rounded-lg p-2 flex-1"
-          />
-          <input
-            type="text"
-            placeholder="Surface Type"
-            value={surface}
-            onChange={(e) => setSurface(e.target.value)}
-            className="border rounded-lg p-2 flex-1"
-          />
-          <input
-            type="file"
-            onChange={(e) => setPhoto(e.target.files?.[0] || null)}
-            className="border rounded-lg p-2 flex-1"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex items-center cursor-pointer justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-medium px-4 py-2 rounded-lg"
-          >
-            <PlusCircle size={18} />
-            {loading ? "Adding..." : "Add Court"}
-          </button>
-        </form>
-
-        {/* Edit Court Form */}
-        {editingCourt && (
-          <form
-            onSubmit={handleUpdateCourt}
-            className="bg-white rounded-xl shadow p-6 mb-8 flex flex-col md:flex-row gap-4 border-t-4 border-blue-500"
-          >
-            <input
-              type="text"
-              placeholder="Court Name"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              required
-              className="border rounded-lg p-2 flex-1"
-            />
-            <input
-              type="text"
-              placeholder="Surface Type"
-              value={editSurface}
-              onChange={(e) => setEditSurface(e.target.value)}
-              className="border rounded-lg p-2 flex-1"
-            />
-            <select
-              value={editStatus}
-              onChange={(e) => setEditStatus(e.target.value)}
-              className="border rounded-lg p-2 flex-1"
-            >
-              <option value="AVAILABLE">AVAILABLE</option>
-              <option value="BOOKED">BOOKED</option>
-              <option value="MAINTENANCE">MAINTENANCE</option>
-            </select>
-            <button
-              type="submit"
-              className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium"
-            >
-              Save Changes
-            </button>
-            <button
-              type="button"
-              onClick={() => setEditingCourt(null)}
-              className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg cursor-pointer font-medium"
-            >
-              Cancel
-            </button>
-          </form>
-        )}
-
-        {/* Courts List */}
-        <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-        >
-          {courts.map((court) => (
-            <motion.div
-              key={court.id}
-              variants={cardVariants}
-              className="bg-white shadow rounded-xl p-4 flex flex-col"
-            >
-              {court.photo && (
-                <img
-                  src={`http://localhost:8080${court.photo}`}
-                  alt={court.name}
-                  className="h-40 w-full object-cover rounded-lg mb-3"
-                />
-              )}
-              <h3 className="font-semibold text-gray-800">{court.name}</h3>
-              <p className="text-sm text-gray-500 mb-2">
-                Surface: {court.surface || "N/A"}
-              </p>
-              <p className="text-sm text-gray-500 mb-4">Status: {court.status || "Available"}</p>
-
-              <div className="flex gap-3 mt-auto">
-                <button
-                  onClick={() => handleEditClick(court)}
-                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
-                >
-                  <Edit3 size={16} /> Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(court.id)}
-                  className="flex items-center gap-1 text-red-600 hover:text-red-800"
-                >
-                  <Trash2 size={16} /> Delete
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </div>
-  );
-};
-
-export default AdminCourts;
-=======
       console.error("Error updating:", err);
     }
   };
@@ -800,4 +534,3 @@ export default AdminCourts;
 };
 
 export default AdminCourts;
->>>>>>> 068dd01 (added bookingspage, userdashboard)
