@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { LayoutGrid, Map, CalendarCheck, User, LogOut, Activity, Zap } from "lucide-react";
+import { LayoutGrid, Map, CalendarCheck, User, LogOut, Activity} from "lucide-react";
 
 const Sidebar: React.FC = () => {
   const navigate     = useNavigate();
@@ -63,18 +63,6 @@ const Sidebar: React.FC = () => {
           ))}
         </nav>
 
-        {/* Pro plan box */}
-        <div className="mx-3 mb-3 bg-gradient-to-br from-[#12122a] to-[#0f0f1e] border border-orange-500/15 rounded-xl p-4 text-center">
-          <div className="flex items-center justify-center gap-1.5 mb-1">
-            <Zap size={11} className="text-orange-400" />
-            <p className="text-[10px] text-orange-400 tracking-widest uppercase font-medium">Pro Plan</p>
-          </div>
-          <p className="text-[9px] text-slate-600 tracking-wider mb-3">Expires in 12 days</p>
-          <button className="w-full bg-orange-500/10 border border-orange-500/20 text-orange-400 hover:bg-orange-500/20 py-1.5 rounded-lg text-[10px] tracking-widest uppercase transition-colors">
-            Upgrade
-          </button>
-        </div>
-
         {/* Bottom */}
         <div className="px-4 pt-3 border-t border-orange-500/10 space-y-3">
           <button
@@ -83,10 +71,6 @@ const Sidebar: React.FC = () => {
           >
             <LogOut size={14} /> Log Out
           </button>
-          <div className="flex items-center gap-2 px-3">
-            <span className="live-dot w-1.5 h-1.5 rounded-full bg-green-500 block" />
-            <span className="text-[10px] text-slate-500/50 tracking-[0.15em]">LIVE</span>
-          </div>
         </div>
       </aside>
 

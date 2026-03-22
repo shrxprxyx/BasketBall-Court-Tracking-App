@@ -270,7 +270,7 @@ const ProfilePage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => fileRef.current?.click()}
-                  className="absolute -bottom-1.5 -right-1.5 w-7 h-7 bg-orange-500 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors shadow-lg"
+                  className="absolute -bottom-1.5 -right-1.5 w-7 h-7 cursor-pointer bg-orange-500 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors shadow-lg"
                 >
                   <Camera size={13} className="text-white" />
                 </button>
@@ -299,39 +299,6 @@ const ProfilePage: React.FC = () => {
                     <p className="text-[9px] text-slate-600 tracking-widest uppercase mt-0.5">Courts</p>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-
-            {/* Achievement badges */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-              className="bg-gradient-to-br from-[#12122a] to-[#0f0f1e] border border-orange-500/[0.1] rounded-2xl p-5"
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <Award size={13} className="text-orange-500" />
-                <h3 className="font-barlow text-sm font-bold text-slate-100 uppercase tracking-wider">Achievements</h3>
-              </div>
-              <div className="space-y-2.5">
-                {[
-                  { label: "First Booking",   unlocked: stats.total >= 1,  icon: "🏀" },
-                  { label: "Regular Player",  unlocked: stats.total >= 5,  icon: "⭐" },
-                  { label: "Court Explorer",  unlocked: stats.courts >= 3, icon: "🗺️" },
-                  { label: "Dedicated Hooper",unlocked: stats.total >= 10, icon: "🏆" },
-                ].map(badge => (
-                  <div key={badge.label} className={`flex items-center gap-3 px-3 py-2 rounded-xl border transition-all ${
-                    badge.unlocked
-                      ? "bg-orange-500/8 border-orange-500/20"
-                      : "bg-slate-800/20 border-slate-700/20 opacity-40"
-                  }`}>
-                    <span className="text-base">{badge.icon}</span>
-                    <span className={`text-[11px] tracking-wide ${badge.unlocked ? "text-slate-200" : "text-slate-600"}`}>
-                      {badge.label}
-                    </span>
-                    {badge.unlocked && (
-                      <Check size={10} className="text-orange-400 ml-auto shrink-0" />
-                    )}
-                  </div>
-                ))}
               </div>
             </motion.div>
 
@@ -391,7 +358,7 @@ const ProfilePage: React.FC = () => {
                   {!editing ? (
                     <button
                       onClick={() => setEditing(true)}
-                      className="flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 hover:bg-orange-500/20 px-4 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-colors"
+                      className="flex cursor-pointer items-center gap-2 bg-orange-500/10 border border-orange-500/20 text-orange-400 hover:bg-orange-500/20 px-4 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-colors"
                     >
                       <Edit3 size={12} /> Edit
                     </button>
@@ -400,13 +367,13 @@ const ProfilePage: React.FC = () => {
                       <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-colors"
+                        className="flex items-center cursor-pointer gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-colors"
                       >
                         <Check size={12} /> {saving ? "Saving…" : "Save"}
                       </button>
                       <button
                         onClick={handleCancel}
-                        className="flex items-center gap-2 bg-slate-700/40 hover:bg-slate-700/60 text-slate-400 px-4 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-colors"
+                        className="flex cursor-pointer items-center gap-2 bg-slate-700/40 hover:bg-slate-700/60 text-slate-400 px-4 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-colors"
                       >
                         <X size={12} /> Cancel
                       </button>
@@ -456,7 +423,7 @@ const ProfilePage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => navigate("/bookings")}
-                  className="text-[10px] text-orange-400 hover:text-orange-300 tracking-widest uppercase transition-colors"
+                  className="text-[10px] cursor-pointer text-orange-400 hover:text-orange-300 tracking-widest uppercase transition-colors"
                 >
                   View All →
                 </button>
@@ -510,9 +477,6 @@ const ProfilePage: React.FC = () => {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
               className="bg-gradient-to-br from-[#1a0f0f] to-[#0f0f1e] border border-red-500/[0.12] rounded-2xl p-5"
             >
-              <h3 className="font-barlow text-sm font-bold text-red-400/70 uppercase tracking-wider mb-4">
-                Danger Zone
-              </h3>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-slate-300 text-xs font-medium">Sign out of your account</p>
@@ -520,7 +484,7 @@ const ProfilePage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => { localStorage.removeItem("token"); navigate("/signin"); }}
-                  className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-colors shrink-0 ml-4"
+                  className="flex items-center cursor-pointer gap-2 bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-xl text-[10px] tracking-widest uppercase transition-colors shrink-0 ml-4"
                 >
                   <LogOut size={12} /> Sign Out
                 </button>
