@@ -12,10 +12,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // TEMP: Admin auth (bypass for testing)
-const adminAuth = (req, res, next) => next(); // replace with real auth later
+const adminAuth = (req, res, next) => next(); 
 
 // -------------------
-// ✅ Add a new court
+// Add a new court
 // -------------------
 router.post("/", adminAuth, upload.single("photo"), async (req, res) => {
   const { name, surface, status, distance, players } = req.body;
@@ -39,7 +39,7 @@ router.post("/", adminAuth, upload.single("photo"), async (req, res) => {
 });
 
 // -------------------
-// ✅ Update court (simplified version)
+// Update court
 // -------------------
 router.put("/:id", adminAuth, async (req, res) => {
   const { name, surface, status } = req.body;
@@ -63,7 +63,7 @@ router.put("/:id", adminAuth, async (req, res) => {
 });
 
 // -------------------
-// ✅ Delete court
+// Delete court
 // -------------------
 router.delete("/:id", adminAuth, async (req, res) => {
   const { id } = req.params;

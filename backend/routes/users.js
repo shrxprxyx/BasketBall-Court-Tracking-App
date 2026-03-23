@@ -3,7 +3,7 @@ const router  = require("express").Router();
 const pool    = require("../db/pool");
 const bcrypt  = require("bcrypt");
 
-// ✅ GET all users
+// GET all users
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(
@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ PUT update user profile (name, email, optional new password)
+// PUT update user profile (name, email, optional new password)
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { name, email, password } = req.body;

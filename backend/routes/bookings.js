@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require("../db/pool");
 const { getIO } = require("../socket");
 
-// ✅ Helper — broadcast latest bookings (includes user_id for frontend matching)
+// broadcast latest bookings (includes user_id for frontend matching)
 const emitBookingsUpdate = async () => {
   try {
     const result = await pool.query(
@@ -20,7 +20,7 @@ const emitBookingsUpdate = async () => {
   }
 };
 
-// ✅ GET all bookings
+// GET all bookings
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(
@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ POST create a new booking
+// POST create a new booking
 router.post("/", async (req, res) => {
   const { user_id, court_id, timeslot, status } = req.body;
   try {
@@ -53,7 +53,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// ✅ PUT update booking status
+// PUT update booking status
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -71,7 +71,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// ✅ DELETE a booking
+// DELETE a booking
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {

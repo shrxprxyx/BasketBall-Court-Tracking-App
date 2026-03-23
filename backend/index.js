@@ -10,7 +10,7 @@ const pool = require("./db/pool");
 
 const adminCourtRoutes = require("./routes/adminCourts");
 const courtRoutes = require("./routes/courts");
-const authRoutes = require("./routes/auth"); // ✅ add this
+const authRoutes = require("./routes/auth"); 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,7 +22,7 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 // Routes
-app.use("/api/auth", authRoutes); // ✅ added this line
+app.use("/api/auth", authRoutes); 
 app.use("/api/admin/court", adminCourtRoutes);
 app.use("/api/courts", courtRoutes);
 app.use("/api/users", userRoutes);

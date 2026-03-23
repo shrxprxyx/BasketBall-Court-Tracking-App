@@ -4,11 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Mail, Shield, Edit3, Check, X,
   CalendarCheck, MapPin, Clock, Camera,
-  TrendingUp, Award, Activity, LogOut,
+  TrendingUp, Activity, LogOut,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface UserProfile {
   id: number;
@@ -27,7 +26,6 @@ interface Booking {
 
 const API_BASE = "http://localhost:8080/api";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const getUserFromToken = (): { userId: number; name: string; email: string; role: string } | null => {
   try {
@@ -59,7 +57,6 @@ const getInitials = (name: string) =>
 const getAvatarHue = (name: string) =>
   (name.charCodeAt(0) * 37 + (name.charCodeAt(1) || 0) * 13) % 360;
 
-// ─── Input component ──────────────────────────────────────────────────────────
 
 const Field: React.FC<{
   label: string;
@@ -91,7 +88,6 @@ const Field: React.FC<{
   </div>
 );
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
 
 const ProfilePage: React.FC = () => {
   const navigate  = useNavigate();
@@ -114,8 +110,6 @@ const ProfilePage: React.FC = () => {
   // Avatar upload
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  // ── Load ────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     if (!tokenData) { navigate("/signin"); return; }
@@ -152,9 +146,7 @@ const ProfilePage: React.FC = () => {
     };
 
     fetchAll();
-  }, []);// eslint-disable-line
-
-  // ── Save ────────────────────────────────────────────────────────────────────
+  }, []);
 
   const handleSave = async () => {
     if (!profile) return;
@@ -164,7 +156,7 @@ const ProfilePage: React.FC = () => {
     }
     setSaving(true); setError("");
     try {
-      // PUT /api/users/:id — update name/email (add this endpoint if needed)
+      // PUT /api/users/:id — update name/email 
       await axios.put(`${API_BASE}/users/${profile.id}`, {
         name:     editName,
         email:    editEmail,
@@ -199,7 +191,6 @@ const ProfilePage: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
-  // ── Stats ───────────────────────────────────────────────────────────────────
 
   const stats = {
     total:     bookings.length,
