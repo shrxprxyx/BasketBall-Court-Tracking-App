@@ -49,7 +49,6 @@ const login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ error: "Invalid credentials" });
 
-    // ✅ Include name in JWT so frontend can identify the user without extra API call
     const token = jwt.sign(
       { userId: user.id, name: user.name, email: user.email, role: user.role },
       process.env.JWT_SECRET,

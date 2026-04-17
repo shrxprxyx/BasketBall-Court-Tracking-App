@@ -326,7 +326,7 @@ const BookingsPage: React.FC = () => {
             <button key={t.key}
               onClick={() => setTab(t.key as "mine" | "all")}
               className={[
-                "flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] tracking-widest uppercase border transition-all",
+                "flex items-center cursor-pointer gap-2 px-4 py-2 rounded-xl text-[11px] tracking-widest uppercase border transition-all",
                 tab === t.key
                   ? "bg-orange-500/15 border-orange-500/40 text-orange-400"
                   : "bg-transparent border-slate-700/40 text-slate-500 hover:border-slate-600",
@@ -422,7 +422,7 @@ const BookingsPage: React.FC = () => {
                   {isMine && (
                     <button
                       onClick={() => setDeleteTarget(b)}
-                      className="w-7 h-7 rounded-lg hover:bg-red-500/10 border border-transparent hover:border-red-500/20 text-slate-600 hover:text-red-400 flex items-center justify-center transition-all"
+                      className="w-7 cursor-pointer h-7 rounded-lg hover:bg-red-500/10 border border-transparent hover:border-red-500/20 text-slate-600 hover:text-red-400 flex items-center justify-center transition-all"
                     >
                       <Trash2 size={12} />
                     </button>

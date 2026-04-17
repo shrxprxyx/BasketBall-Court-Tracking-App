@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// TEMP: Admin auth (bypass for testing)
+// Admin auth (bypass for testing)
 const adminAuth = (req, res, next) => next(); 
 
 // -------------------

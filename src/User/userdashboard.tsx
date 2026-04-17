@@ -187,7 +187,7 @@ const BookingModal: React.FC<{
                 <button key={slot} type="button"
                   onClick={() => setTimeslot(slot)}
                   className={[
-                    "py-2 px-2 rounded-lg text-[10px] tracking-wide border transition-all text-left",
+                    "py-2 cursor-pointer px-2 rounded-lg text-[10px] tracking-wide border transition-all text-left",
                     timeslot === slot
                       ? "bg-orange-500/15 border-orange-500/50 text-orange-400"
                       : "bg-[#0a0a18] border-slate-700/50 text-slate-500 hover:border-slate-600 hover:text-slate-400",
@@ -202,7 +202,7 @@ const BookingModal: React.FC<{
           <button
             onClick={handleBook}
             disabled={loading || !timeslot}
-            className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed text-white py-3 rounded-xl text-[12px] tracking-widest uppercase transition-colors"
+            className="w-full cursor-pointer flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed text-white py-3 rounded-xl text-[12px] tracking-widest uppercase transition-colors"
           >
             {loading ? "Booking…" : <><ArrowRight size={14} /> Confirm Booking</>}
           </button>
@@ -394,7 +394,7 @@ const UserDashboard: React.FC = () => {
               <button key={opt.val}
                 onClick={() => setStatusFilter(opt.val)}
                 className={[
-                  "px-3 py-2 rounded-xl text-[10px] tracking-widest uppercase border transition-all",
+                  "px-3 py-2 cursor-pointer rounded-xl text-[10px] tracking-widest uppercase border transition-all",
                   statusFilter === opt.val
                     ? "bg-orange-500/15 border-orange-500/40 text-orange-400"
                     : "bg-transparent border-slate-700/50 text-slate-500 hover:border-slate-600",
@@ -502,7 +502,7 @@ const UserDashboard: React.FC = () => {
                       onClick={() => setBookingCourt(court)}
                       disabled={court.status === "CLOSED"}
                       className={[
-                        "mt-auto w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] tracking-widest uppercase transition-all border",
+                        "mt-auto w-full flex cursor-pointer items-center justify-center gap-2 py-2.5 rounded-xl text-[11px] tracking-widest uppercase transition-all border",
                         court.status === "CLOSED"
                           ? "bg-slate-700/20 border-slate-700/30 text-slate-600 cursor-not-allowed"
                           : "bg-orange-500/10 border-orange-500/25 text-orange-400 hover:bg-orange-500/20 hover:border-orange-500/50",

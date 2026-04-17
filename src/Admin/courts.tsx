@@ -149,7 +149,7 @@ const AdminCourts: React.FC = () => {
   const navItems = [
     { id: "dashboard", icon: <Box size={16} />,      label: "Dashboard", to: "/admin-dashboard" },
     { id: "courts",    icon: <MapPin size={16} />,    label: "Courts",    to: "/admin/courts" },
-    { id: "users",     icon: <Users size={16} />,     label: "Users",     to: "#" },
+    { id: "users",     icon: <Users size={16} />,     label: "Users",     to: "/admin/UserPage" },
     { id: "bookings",  icon: <Bookmark size={16} />,  label: "Bookings",  to: "#" },
     { id: "settings",  icon: <Settings size={16} />,  label: "Settings",  to: "#" },
   ];

@@ -140,7 +140,7 @@ const SignIn: React.FC = () => {
           {/* Go back */}
           <button
             onClick={() => navigate("/")}
-            className="absolute top-6 right-6 flex items-center gap-2 text-[10px] text-slate-500 hover:text-slate-300 tracking-widest uppercase transition-colors"
+            className="absolute cursor-pointer top-6 right-6 flex items-center gap-2 text-[10px] text-slate-500 hover:text-slate-300 tracking-widest uppercase transition-colors"
           >
             <ArrowLeft size={12} /> Back
           </button>

@@ -291,10 +291,6 @@ const HomePage: React.FC = () => {
               <span className="text-orange-500">Awaits</span>
             </h2>
 
-            <p className="text-slate-400 text-[13px] tracking-wider leading-relaxed mb-10 max-w-md">
-              Join thousands of players already using CourtWatch to find and book courts in seconds.
-            </p>
-
             <Link
               to="/signin"
               className="flex items-center gap-2 px-8 py-4 rounded-xl bg-orange-500 text-white text-[12px] tracking-widest uppercase font-medium hover:bg-orange-600 transition-colors"
@@ -318,11 +314,6 @@ const HomePage: React.FC = () => {
             <p className="text-[10px] text-slate-600 tracking-widest uppercase">
               © {new Date().getFullYear()} CourtWatch. All rights reserved.
             </p>
-            <div className="flex gap-6 text-[10px] text-slate-600 tracking-widest uppercase">
-              <a href="#" className="hover:text-slate-400 transition-colors">Privacy</a>
-              <a href="#" className="hover:text-slate-400 transition-colors">Terms</a>
-              <a href="#" className="hover:text-slate-400 transition-colors">Contact</a>
-            </div>
           </div>
         </footer>
 
