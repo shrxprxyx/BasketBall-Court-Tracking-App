@@ -5,8 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import io, { Socket } from "socket.io-client";
 import {
   Bell, User, MapPin, Bookmark, Users, Settings,
-  Box, Activity, Wifi, WifiOff, RefreshCw,
-  CheckCircle, AlertCircle, Info, X, Zap,
+  Box, Activity, Zap,
 } from "lucide-react";
 import {
   XAxis, YAxis, CartesianGrid, Tooltip,
@@ -40,22 +39,6 @@ type Booking = {
   status: string;
 };
 
-type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
-
-type Toast = {
-  id: string;
-  message: string;
-  type: "success" | "info" | "warning" | "error";
-  timestamp: Date;
-};
-
-type LiveEvent = {
-  id: string;
-  message: string;
-  type: "users" | "courts" | "bookings";
-  timestamp: Date;
-};
-
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const weeklyData = [
@@ -68,7 +51,7 @@ const weeklyData = [
   { day: "Sun", value: 45 },
 ];
 
-const API_BASE = "http://localhost:8080/api";
+const API_BASE   = "http://localhost:8080/api";
 const SOCKET_URL = "http://localhost:8080";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -78,7 +61,7 @@ const statusConfig = (status?: string) => {
     case "available":
       return { dot: "bg-green-500", badge: "bg-green-500/10 text-green-400" };
     case "occupied":
-      return { dot: "bg-red-500", badge: "bg-red-500/10 text-red-400" };
+      return { dot: "bg-red-500",   badge: "bg-red-500/10 text-red-400"   };
     case "maintenance":
       return { dot: "bg-amber-500", badge: "bg-amber-500/10 text-amber-400" };
     default:
@@ -86,12 +69,7 @@ const statusConfig = (status?: string) => {
   }
 };
 
-const uid = () => Math.random().toString(36).slice(2, 9);
-
-const fmtTime = (d: Date) =>
-  d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// ─── Tooltip ──────────────────────────────────────────────────────────────────
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload?.length) {
@@ -105,101 +83,26 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-// Toast notification
-const ToastItem: React.FC<{ toast: Toast; onDismiss: (id: string) => void }> = ({ toast, onDismiss }) => {
-  useEffect(() => {
-    const t = setTimeout(() => onDismiss(toast.id), 4500);
-    return () => clearTimeout(t);
-  }, [toast.id, onDismiss]);
-
-  const icons = {
-    success: <CheckCircle size={14} className="text-green-400 shrink-0" />,
-    info: <Info size={14} className="text-blue-400 shrink-0" />,
-    warning: <AlertCircle size={14} className="text-amber-400 shrink-0" />,
-    error: <AlertCircle size={14} className="text-red-400 shrink-0" />,
-  };
-  const colors = {
-    success: "border-green-500/30 bg-green-500/5",
-    info: "border-blue-500/30 bg-blue-500/5",
-    warning: "border-amber-500/30 bg-amber-500/5",
-    error: "border-red-500/30 bg-red-500/5",
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 60, scale: 0.9 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 60, scale: 0.9 }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-      className={`flex items-start gap-2.5 px-3.5 py-3 rounded-xl border text-xs font-mono-dm shadow-xl ${colors[toast.type]}`}
-      style={{ background: "#0f0f1e" }}
-    >
-      {icons[toast.type]}
-      <div className="flex-1 min-w-0">
-        <p className="text-slate-200 text-[11px] leading-snug">{toast.message}</p>
-        <p className="text-slate-500 text-[9px] mt-0.5 tracking-wider">{fmtTime(toast.timestamp)}</p>
-      </div>
-      <button onClick={() => onDismiss(toast.id)} className="text-slate-500 hover:text-slate-300 transition-colors ml-1 mt-0.5">
-        <X size={12} />
-      </button>
-    </motion.div>
-  );
-};
-
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const AdminDashboard: React.FC = () => {
-  const [courts, setCourts] = useState<Court[]>([]);
-  const [users, setUsers] = useState<UserType[]>([]);
+  const [courts,   setCourts]   = useState<Court[]>([]);
+  const [users,    setUsers]    = useState<UserType[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading,  setLoading]  = useState(true);
   const [activeNav, setActiveNav] = useState("dashboard");
 
-  // Real-time state
-  const [socketStatus, setSocketStatus] = useState<ConnectionStatus>("connecting");
-  const [socketId, setSocketId] = useState<string | null>(null);
-  const [lastPing, setLastPing] = useState<Date | null>(null);
-  const [toasts, setToasts] = useState<Toast[]>([]);
-  const [liveEvents, setLiveEvents] = useState<LiveEvent[]>([]);
-  const [showEventFeed, setShowEventFeed] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
-
   // Flash states for tables
-  const [flashCourts, setFlashCourts] = useState(false);
-  const [flashUsers, setFlashUsers] = useState(false);
+  const [flashCourts,   setFlashCourts]   = useState(false);
+  const [flashUsers,    setFlashUsers]    = useState(false);
   const [flashBookings, setFlashBookings] = useState(false);
 
   const socketRef = useRef<Socket | null>(null);
-  const lastConnErrRef = useRef<number>(0); // throttle connect_error toasts
-
-  // ── Helpers ──────────────────────────────────────────────────────────────
-
-  const addToast = useCallback((message: string, type: Toast["type"] = "info") => {
-    setToasts(prev => {
-      // Deduplicate: skip if same message already visible
-      if (prev.some(t => t.message === message)) return prev;
-      return [...prev.slice(-4), { id: uid(), message, type, timestamp: new Date() }];
-    });
-  }, []);
-
-  // Stable ref so fetch useEffect can use it without being in deps
-  const addToastRef = useRef(addToast);
-  useEffect(() => { addToastRef.current = addToast; }, [addToast]);
-
-  const dismissToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
-  }, []);
-
-  const addLiveEvent = useCallback((message: string, type: LiveEvent["type"]) => {
-    setLiveEvents(prev => [{ id: uid(), message, type, timestamp: new Date() }, ...prev.slice(0, 49)]);
-    setUnreadCount(c => c + 1);
-  }, []);
 
   const flashTable = (which: "courts" | "users" | "bookings") => {
-    if (which === "courts") { setFlashCourts(true); setTimeout(() => setFlashCourts(false), 1200); }
-    if (which === "users")  { setFlashUsers(true);  setTimeout(() => setFlashUsers(false),  1200); }
-    if (which === "bookings"){ setFlashBookings(true); setTimeout(() => setFlashBookings(false), 1200); }
+    if (which === "courts")   { setFlashCourts(true);   setTimeout(() => setFlashCourts(false),   1200); }
+    if (which === "users")    { setFlashUsers(true);    setTimeout(() => setFlashUsers(false),    1200); }
+    if (which === "bookings") { setFlashBookings(true); setTimeout(() => setFlashBookings(false), 1200); }
   };
 
   // ── Initial fetch ─────────────────────────────────────────────────────────
@@ -212,18 +115,17 @@ const AdminDashboard: React.FC = () => {
           axios.get(`${API_BASE}/users`),
           axios.get(`${API_BASE}/bookings`),
         ]);
-        setCourts(courtRes.data || []);
-        setUsers(userRes.data || []);
+        setCourts(courtRes.data   || []);
+        setUsers(userRes.data     || []);
         setBookings(bookingRes.data || []);
       } catch (err) {
         console.error("Error fetching data:", err);
-        addToastRef.current("Failed to load initial data", "error");
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, []); // stable ref — no deps needed
+  }, []);
 
   // ── Socket.IO ─────────────────────────────────────────────────────────────
 
@@ -235,67 +137,25 @@ const AdminDashboard: React.FC = () => {
     });
     socketRef.current = socket;
 
-    socket.on("connect", () => {
-      setSocketStatus("connected");
-      setSocketId(socket.id ?? null);
-      setLastPing(new Date());
-      addToast("Connected to live server", "success");
-      addLiveEvent("Socket connected", "users");
-    });
-
-    socket.on("disconnect", (reason) => {
-      setSocketStatus("disconnected");
-      setSocketId(null);
-      addToast(`Disconnected: ${reason}`, "error");
-      addLiveEvent(`Disconnected (${reason})`, "users");
-    });
-
-    socket.on("connect_error", () => {
-      setSocketStatus("error");
-      const now = Date.now();
-      if (now - lastConnErrRef.current > 5000) {
-        lastConnErrRef.current = now;
-        addToast("Connection error — retrying…", "warning");
-      }
-    });
-
-    socket.on("reconnecting", () => {
-      setSocketStatus("connecting");
-    });
-
-    // ── Data events ──
-
     socket.on("usersUpdated", (updatedUsers: UserType[]) => {
       setUsers(updatedUsers);
-      setLastPing(new Date());
       flashTable("users");
-      addToast(`Users updated · ${updatedUsers.length} total`, "info");
-      addLiveEvent(`Users list updated (${updatedUsers.length} users)`, "users");
     });
 
     socket.on("courtsUpdated", (updatedCourts: Court[]) => {
       setCourts(updatedCourts);
-      setLastPing(new Date());
       flashTable("courts");
-      addToast(`Courts updated · ${updatedCourts.length} total`, "info");
-      addLiveEvent(`Courts list updated (${updatedCourts.length} courts)`, "courts");
     });
 
-    // bookingsUpdated — wire up once backend emits it (see bookings.js update below)
     socket.on("bookingsUpdated", (updatedBookings: Booking[]) => {
       setBookings(updatedBookings);
-      setLastPing(new Date());
       flashTable("bookings");
-      addToast(`New booking activity · ${updatedBookings.length} total`, "success");
-      addLiveEvent(`Bookings updated (${updatedBookings.length} bookings)`, "bookings");
     });
 
-    return () => {
-      socket.disconnect();
-    };
+    return () => { socket.disconnect(); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Loading screen ────────────────────────────────────────────────────────
+  // ── Loading ───────────────────────────────────────────────────────────────
 
   if (loading)
     return (
@@ -305,31 +165,25 @@ const AdminDashboard: React.FC = () => {
       </div>
     );
 
-  // ── Data ──────────────────────────────────────────────────────────────────
+  // ── Nav / stats data ──────────────────────────────────────────────────────
 
   const navItems = [
-    { id: "dashboard", icon: <Box size={16} />, label: "Dashboard", to: "#" },
-    { id: "courts",   icon: <MapPin size={16} />, label: "Courts",    to: "/admin/courts" },
-    { id: "users",    icon: <Users size={16} />,  label: "Users",     to: "/admin/UserPage" },
-    { id: "bookings", icon: <Bookmark size={16} />, label: "Bookings", to: "#" },
-    { id: "settings", icon: <Settings size={16} />, label: "Settings", to: "#" },
+    { id: "dashboard", icon: <Box size={16} />,      label: "Dashboard", to: "/admin-dashboard" },
+    { id: "courts",    icon: <MapPin size={16} />,    label: "Courts",    to: "/admin/courts"    },
+    { id: "users",     icon: <Users size={16} />,     label: "Users",     to: "/admin/UserPage"     },
+    { id: "bookings",  icon: <Bookmark size={16} />,  label: "Bookings",  to: "#"                },
+    { id: "settings",  icon: <Settings size={16} />,  label: "Settings",  to: "#"                },
   ];
 
   const stats = [
-    { label: "Total Courts",   value: courts.length,   icon: <MapPin size={20} />,     flash: flashCourts },
-    { label: "Total Users",    value: users.length,    icon: <Users size={20} />,  flash: flashUsers },
-    { label: "Total Bookings", value: bookings.length, icon: <Bookmark size={20} />,    flash: flashBookings },
+    { label: "Total Courts",   value: courts.length,   icon: <MapPin size={20} />,   flash: flashCourts   },
+    { label: "Total Users",    value: users.length,    icon: <Users size={20} />,    flash: flashUsers    },
+    { label: "Total Bookings", value: bookings.length, icon: <Bookmark size={20} />, flash: flashBookings },
   ];
 
   const today = new Date()
     .toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })
     .toUpperCase();
-
-  const eventTypeColor: Record<LiveEvent["type"], string> = {
-    users: "text-blue-400",
-    courts: "text-orange-400",
-    bookings: "text-green-400",
-  };
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -353,21 +207,10 @@ const AdminDashboard: React.FC = () => {
         .flash-ring { animation: flash-ring 1.1s ease-out; }
       `}</style>
 
-      {/* ── Toast stack ── */}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 w-72">
-        <AnimatePresence>
-          {toasts.map(t => (
-            <ToastItem key={t.id} toast={t} onDismiss={dismissToast} />
-          ))}
-        </AnimatePresence>
-      </div>
-
       <div className="flex min-h-screen bg-[#0d0d1a] font-mono-dm">
 
         {/* ── Sidebar ── */}
         <aside className="w-[220px] bg-[#0f0f1e] border-r border-orange-500/10 flex flex-col sticky top-0 h-screen py-7 shrink-0">
-
-          {/* Logo */}
           <div className="px-6 pb-8 border-b border-orange-500/10">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shrink-0">
@@ -380,7 +223,6 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Nav */}
           <nav className="flex-1 px-3 pt-5">
             <p className="text-[9px] text-slate-500/50 tracking-[0.2em] uppercase px-3 pb-3">Navigation</p>
             {navItems.map(item => (
@@ -395,8 +237,7 @@ const AdminDashboard: React.FC = () => {
                     : "text-slate-400/70 border-l-2 border-transparent hover:bg-orange-500/5 hover:text-orange-400",
                 ].join(" ")}
               >
-                {item.icon}
-                {item.label}
+                {item.icon}{item.label}
               </Link>
             ))}
           </nav>
@@ -413,84 +254,16 @@ const AdminDashboard: React.FC = () => {
               </h1>
               <p className="text-[11px] text-slate-500/50 mt-0.5 tracking-widest">{today}</p>
             </div>
-
-            <div className="flex items-center gap-3">
-
-              {/* Live event feed toggle */}
-              <button
-                onClick={() => { setShowEventFeed(v => !v); setUnreadCount(0); }}
-                className="relative bg-orange-500/10 border border-orange-500/20 rounded-lg p-2 cursor-pointer flex items-center hover:bg-orange-500/20 transition-colors"
-              >
-                <Zap size={16} className="text-orange-500" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-orange-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1">
-                    {unreadCount > 99 ? "99+" : unreadCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Bell */}
-              <button className="relative bg-orange-500/10 border border-orange-500/20 rounded-lg p-2 cursor-pointer flex items-center hover:bg-orange-500/20 transition-colors">
-                <Bell size={16} className="text-orange-500" />
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-[#0d0d1a]" />
-              </button>
-
-              {/* Admin pill */}
-              <div className="flex items-center gap-2.5 bg-orange-500/[0.08] border border-orange-500/15 rounded-xl px-3.5 py-2">
-                <div className="w-7 h-7 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center shrink-0">
-                  <User size={14} className="text-white" />
-                </div>
-                <div>
-                  <p className="text-slate-100 text-[12px] font-medium leading-tight">Admin</p>
-                </div>
+            <div className="flex items-center gap-2.5 bg-orange-500/[0.08] border border-orange-500/15 rounded-xl px-3.5 py-2">
+              <div className="w-7 h-7 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center shrink-0">
+                <User size={14} className="text-white" />
+              </div>
+              <div>
+                <p className="text-slate-100 text-[12px] font-medium leading-tight">Admin</p>
+                <p className="text-orange-500 text-[9px] tracking-[0.1em] leading-tight">SUPER USER</p>
               </div>
             </div>
           </header>
-
-          {/* ── Live Event Feed Panel ── */}
-          <AnimatePresence>
-            {showEventFeed && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden mb-6"
-              >
-                <div className="bg-gradient-to-br from-[#12122a] to-[#0f0f1e] border border-orange-500/[0.15] rounded-2xl p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Zap size={14} className="text-orange-500" />
-                      <h3 className="font-barlow text-sm font-bold text-slate-100 tracking-wider uppercase">Live Event Feed</h3>
-                      <span className="live-dot w-1.5 h-1.5 rounded-full bg-green-400 block" />
-                    </div>
-                    <button
-                      onClick={() => setLiveEvents([])}
-                      className="flex items-center gap-1.5 text-[10px] text-slate-500 hover:text-slate-300 tracking-widest transition-colors"
-                    >
-                      <RefreshCw size={10} /> CLEAR
-                    </button>
-                  </div>
-
-                  {liveEvents.length === 0 ? (
-                    <p className="text-slate-600 text-[11px] tracking-widest py-2">Waiting for events…</p>
-                  ) : (
-                    <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
-                      {liveEvents.map(ev => (
-                        <div key={ev.id} className="flex items-center gap-3 text-[11px] border-b border-slate-700/20 pb-1.5">
-                          <span className="text-slate-600 font-mono shrink-0">{fmtTime(ev.timestamp)}</span>
-                          <span className={`shrink-0 uppercase text-[9px] tracking-widest ${eventTypeColor[ev.type]}`}>
-                            [{ev.type}]
-                          </span>
-                          <span className="text-slate-300">{ev.message}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* ── Stat Cards ── */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -498,9 +271,7 @@ const AdminDashboard: React.FC = () => {
               <motion.div
                 key={i}
                 className={`stat-card relative overflow-hidden bg-gradient-to-br from-[#12122a] to-[#0f0f1e] border rounded-2xl p-6 cursor-default transition-all duration-300 ${
-                  card.flash
-                    ? "border-orange-500/60 flash-ring"
-                    : "border-orange-500/[0.12]"
+                  card.flash ? "border-orange-500/60 flash-ring" : "border-orange-500/[0.12]"
                 }`}
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -518,8 +289,6 @@ const AdminDashboard: React.FC = () => {
                   <div>
                     <p className="text-[10px] text-slate-400/60 tracking-[0.15em] uppercase mb-2.5">{card.label}</p>
                     <p className="font-barlow text-[48px] font-extrabold text-slate-100 leading-none">{card.value}</p>
-                    <p className="flex items-center gap-1 text-[10px] text-green-400 mt-2">
-                    </p>
                   </div>
                   <div className="stat-icon w-11 h-11 bg-orange-500/[0.12] border border-orange-500/20 rounded-xl flex items-center justify-center text-orange-500 transition-transform duration-200">
                     {card.icon}
@@ -543,17 +312,12 @@ const AdminDashboard: React.FC = () => {
               </div>
               <div className="flex gap-2">
                 {["1W", "1M", "3M"].map((p, i) => (
-                  <button
-                    key={p}
-                    className={[
-                      "text-[10px] tracking-wider px-2.5 py-1 rounded-md cursor-pointer border transition-colors",
-                      i === 0
-                        ? "bg-orange-500/15 border-orange-500/40 text-orange-500"
-                        : "bg-transparent border-slate-500/10 text-slate-500/40 hover:border-slate-500/30",
-                    ].join(" ")}
-                  >
-                    {p}
-                  </button>
+                  <button key={p} className={[
+                    "text-[10px] tracking-wider px-2.5 py-1 rounded-md cursor-pointer border transition-colors",
+                    i === 0
+                      ? "bg-orange-500/15 border-orange-500/40 text-orange-500"
+                      : "bg-transparent border-slate-500/10 text-slate-500/40 hover:border-slate-500/30",
+                  ].join(" ")}>{p}</button>
                 ))}
               </div>
             </div>
@@ -569,8 +333,7 @@ const AdminDashboard: React.FC = () => {
                 <XAxis dataKey="day" tick={{ fill: "rgba(148,163,184,0.4)", fontSize: 10, fontFamily: "DM Mono" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: "rgba(148,163,184,0.4)", fontSize: 10, fontFamily: "DM Mono" }} axisLine={false} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone" dataKey="value" stroke="#f97316" strokeWidth={2} fill="url(#orangeGrad)"
+                <Area type="monotone" dataKey="value" stroke="#f97316" strokeWidth={2} fill="url(#orangeGrad)"
                   dot={{ fill: "#f97316", r: 3, strokeWidth: 0 }}
                   activeDot={{ r: 5, fill: "#f97316", stroke: "rgba(249,115,22,0.3)", strokeWidth: 4 }}
                 />
@@ -581,7 +344,7 @@ const AdminDashboard: React.FC = () => {
           {/* ── Courts & Users ── */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
 
-            {/* Courts Table */}
+            {/* Courts */}
             <motion.div
               className={`bg-gradient-to-br from-[#12122a] to-[#0f0f1e] border rounded-2xl p-6 transition-all duration-300 ${
                 flashCourts ? "border-orange-500/50 flash-ring" : "border-orange-500/[0.12]"
@@ -593,23 +356,19 @@ const AdminDashboard: React.FC = () => {
                   <h3 className="font-barlow text-base font-bold text-slate-100 tracking-wider uppercase">Courts</h3>
                   {flashCourts && <Zap size={12} className="text-orange-400 animate-pulse" />}
                 </div>
-                <span className="text-[10px] text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">
-                  {courts.length} TOTAL
-                </span>
+                <span className="text-[10px] text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">{courts.length} TOTAL</span>
               </div>
               <table className="w-full border-collapse">
                 <thead>
-                  <tr>
-                    {["Name", "Status", "Players"].map(h => (
-                      <th key={h} className="text-left text-[9px] text-slate-400/40 tracking-[0.18em] uppercase pb-3 font-medium">{h}</th>
-                    ))}
-                  </tr>
+                  <tr>{["Name", "Status", "Players"].map(h => (
+                    <th key={h} className="text-left text-[9px] text-slate-400/40 tracking-[0.18em] uppercase pb-3 font-medium">{h}</th>
+                  ))}</tr>
                 </thead>
                 <tbody>
-                  {courts.map((c) => {
+                  {courts.map(c => {
                     const s = statusConfig(c.status);
                     return (
-                      <tr key={c.id} className="group border-t border-slate-400/[0.06] hover:bg-orange-500/[0.02]">
+                      <tr key={c.id} className="border-t border-slate-400/[0.06] hover:bg-orange-500/[0.02]">
                         <td className="py-2.5 text-slate-200 text-xs font-medium">{c.name}</td>
                         <td>
                           <span className={`inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full tracking-widest ${s.badge}`}>
@@ -625,7 +384,7 @@ const AdminDashboard: React.FC = () => {
               </table>
             </motion.div>
 
-            {/* Users Table */}
+            {/* Users */}
             <motion.div
               className={`bg-gradient-to-br from-[#12122a] to-[#0f0f1e] border rounded-2xl p-6 transition-all duration-300 ${
                 flashUsers ? "border-orange-500/50 flash-ring" : "border-orange-500/[0.12]"
@@ -637,27 +396,26 @@ const AdminDashboard: React.FC = () => {
                   <h3 className="font-barlow text-base font-bold text-slate-100 tracking-wider uppercase">Users</h3>
                   {flashUsers && <Zap size={12} className="text-orange-400 animate-pulse" />}
                 </div>
-                <span className="text-[10px] text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">
-                  {users.length} TOTAL
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full">{users.length} TOTAL</span>
+                  <Link to="/admin/UserPage" className="text-[10px] text-slate-500 hover:text-orange-400 tracking-widest uppercase transition-colors no-underline">
+                    View All →
+                  </Link>
+                </div>
               </div>
               <table className="w-full border-collapse">
                 <thead>
-                  <tr>
-                    {["Name", "Email", "Role"].map(h => (
-                      <th key={h} className="text-left text-[9px] text-slate-400/40 tracking-[0.18em] uppercase pb-3 font-medium">{h}</th>
-                    ))}
-                  </tr>
+                  <tr>{["Name", "Email", "Role"].map(h => (
+                    <th key={h} className="text-left text-[9px] text-slate-400/40 tracking-[0.18em] uppercase pb-3 font-medium">{h}</th>
+                  ))}</tr>
                 </thead>
                 <tbody>
-                  {users.map((u) => (
-                    <tr key={u.id} className="group border-t border-slate-400/[0.06] hover:bg-orange-500/[0.02]">
+                  {users.slice(0, 5).map(u => (
+                    <tr key={u.id} className="border-t border-slate-400/[0.06] hover:bg-orange-500/[0.02]">
                       <td className="py-2.5">
                         <div className="flex items-center gap-2">
-                          <div
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] text-white font-bold shrink-0"
-                            style={{ background: `hsl(${(u.name.charCodeAt(0) * 15) % 360}, 55%, 38%)` }}
-                          >
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] text-white font-bold shrink-0"
+                            style={{ background: `hsl(${(u.name.charCodeAt(0) * 15) % 360}, 55%, 38%)` }}>
                             {u.name[0]}
                           </div>
                           <span className="text-slate-200 text-xs font-medium">{u.name}</span>
@@ -697,17 +455,15 @@ const AdminDashboard: React.FC = () => {
             </div>
             <table className="w-full border-collapse">
               <thead>
-                <tr>
-                  {["User", "Court", "Time Slot", "Status"].map(h => (
-                    <th key={h} className="text-left text-[9px] text-slate-400/40 tracking-[0.18em] uppercase pb-3 font-medium">{h}</th>
-                  ))}
-                </tr>
+                <tr>{["User", "Court", "Time Slot", "Status"].map(h => (
+                  <th key={h} className="text-left text-[9px] text-slate-400/40 tracking-[0.18em] uppercase pb-3 font-medium">{h}</th>
+                ))}</tr>
               </thead>
               <tbody>
-                {bookings.map((b) => {
+                {bookings.map(b => {
                   const s = statusConfig(b.status);
                   return (
-                    <tr key={b.id} className="group border-t border-slate-400/[0.06] hover:bg-orange-500/[0.02]">
+                    <tr key={b.id} className="border-t border-slate-400/[0.06] hover:bg-orange-500/[0.02]">
                       <td className="py-3 text-slate-200 text-xs">{b.user}</td>
                       <td className="text-slate-400/70 text-xs">{b.court}</td>
                       <td className="text-slate-400/50 text-[11px] font-mono">{b.timeslot}</td>
